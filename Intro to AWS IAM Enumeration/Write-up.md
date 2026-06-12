@@ -4,12 +4,6 @@
 - Evaluate IAM security posture of Huge Logistics.
 - Obtain the flag as proof of exfiltration.
 
-## Skills/Concepts Covered
-- IAM Enumeration
-- S3 Bucket Enumeration
-
-## Tools Used
-- AWS CLI
 
 ## Enumeration
 An Access Key ID as well as a Secret Access Key were provided for enumeration of Huge Logistics infrastructure. The provided credentials were used for authentication in the AWS CLI using the the following command:
@@ -139,18 +133,6 @@ Credentials and info for a database was obtained. Attempted to access the databa
 
 
 ## Privilege escalation
-
-
-## Detection opportunities
-
-
-## Mitigations
-
-
-## Learning Outcomes
-
-
-## Lessons Learned
 
 
 ## Reference(s)
