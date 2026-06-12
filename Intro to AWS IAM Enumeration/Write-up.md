@@ -169,7 +169,7 @@ aws s3 cp s3://<s3_bucket>/<flag> .
 <br>
 
 ## Reference(s)
-- https://pwnedlabs.io/
+- Lab provided by PwnedLabs: [Pwned Labs Site](https://pwnedlabs.io/)
 
 
 
