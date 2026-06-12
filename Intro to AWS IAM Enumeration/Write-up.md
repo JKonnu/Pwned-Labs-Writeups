@@ -13,6 +13,7 @@ Note: AWS Access Keys and Secret Access Keys are used to authenticate your reque
 ```bash
 aws configure
 ```
+![Snip](./Screenshots/image1.png)
 <br>
 <br>
 
@@ -20,6 +21,7 @@ The keys were set when prompted and the validity of the credentials were tested 
 ```bash
 aws sts get-caller-identity
 ```
+![Snip](./Screenshots/image2.png)
 <br>
 <br>
 
@@ -27,6 +29,7 @@ From the above command the authenticated username for the AWS CLI was found. Fur
 ```bash
 aws iam list-user-policies --user-name <user>
 ```
+![Snip](./Screenshots/image3.png)
 <br>
 <br>
   
@@ -34,6 +37,7 @@ It was then discovered the user has a policy related to s3 attached to them. Fur
 ```bash
 aws iam get-user-policy --user-name <username> --policy-name <policy_name>
 ```
+![Snip](./Screenshots/image4.png)
 <br>
 <br>
 
@@ -41,6 +45,7 @@ Further enumeration was conducted listing attached policies:
 ```bash
 aws iam list-attached-user-policies --user-name <username>
 ```
+![Snip](./Screenshots/image5.png)
 <br>
 <br>
 
@@ -48,6 +53,7 @@ Enumerated the found attached user policies further by obtaining the different p
 ```bash
 aws iam list-policy-versions --policy-arn <policy_arn>
 ```
+![Snip](./Screenshots/image6.png)
 <br>
 <br>
 
@@ -55,27 +61,7 @@ After the policy versions were obtained further enumeration was conducted on the
 ```bash
 aws iam get-policy-version --policy-arn <policy_arn> --version-id <version>
 ```
-<br>
-<br>
-
-Roles discovered enumnerated as well:
-```bash
-aws iam list-attached-role-policies --role-name <role_name>
-```
-<br>
-<br>
-
-The role policy was enumerated:
-```bash
-aws iam list-policy-versions --policy-arn <policy_arn>
-```
-<br>
-<br>
-
-The policy version details of the policy attached to the role were obtained:
-```
-aws iam get-policy-version --policy-arn <policy_arn> --version-id <version>
-```
+![Snip](./Screenshots/image7.png)
 <br>
 <br>
 
@@ -83,6 +69,7 @@ We can then do further enumeration by checking out the dev01 policy we found:
 ```bash
 aws iam list-policy-versions --policy-arn <policy_arn>
 ```
+![Snip](./Screenshots/image8.png)
 <br>
 <br>
 
@@ -90,6 +77,7 @@ We can then get check the policy versions of the policy:
 ```
 aws iam get-policy-version --policy-arn <policy_arn> --version-id <version>
 ```
+![Snip](./Screenshots/image9.png)
 <br>
 <br>
 
@@ -97,6 +85,7 @@ Let's check another version to see if we find anything interesteing:
 ```
 aws iam get-policy-version --policy-arn <policy_arn> --version-id <version>
 ```
+![Snip](./Screenshots/image10.png)
 <br>
 <br>
 
@@ -104,6 +93,7 @@ From this policy version we find a role and another policy. This is why good enu
 ```
 aws iam list-policy-versions --policy-arn <policy_arn>
 ```
+![Snip](./Screenshots/image11.png)
 <br>
 <br>
 
@@ -111,6 +101,7 @@ Now let's get the policy version:
 ```
 aws iam get-policy-version --policy-arn <policy_arn> --version-id <version>
 ```
+![Snip](./Screenshots/image12.png)
 <br>
 <br>
 
@@ -118,6 +109,7 @@ From the policy version we see that we have permissions to the secrets manager s
 ```bash
 aws iam list-attached-role-policies --role-name <role_name>
 ```
+![Snip](./Screenshots/image13.png)
 <br>
 <br>
 
@@ -125,6 +117,7 @@ We can see the policy we just enumerated is attached to this role. So let's get 
 ```bash
 aws iam get-role --role-name <role_name>
 ```
+![Snip](./Screenshots/image14.png)
 <br>
 <br>
 
