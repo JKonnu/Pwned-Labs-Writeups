@@ -6,7 +6,6 @@
 - Obtain the flag.
 - Retrieve Secrets Manager secret.
 
-
 ## Enumeration
 An Access Key ID as well as a Secret Access Key were provided for enumeration of Huge Logistics infrastructure. The provided credentials were used for authentication in the AWS CLI using the the following command:
 Note: AWS Access Keys and Secret Access Keys are used to authenticate your requests to the AWS CLI and they are generated for a user in the IAM service in the AWS Console.
@@ -125,6 +124,7 @@ The user we currently have access to can assume the role found. the role was ass
 ```bash
 aws sts assume-role --role-arn <role_arn> --role-session-name <session_name>
 ```
+![Snip](./Screenshots/image15.png)
 <br>
 <br>
 
@@ -132,6 +132,7 @@ We obtained credentials for the role and we can configure them for further enume
 ```bash
 aws configure
 ```
+![Snip](./Screenshots/image16.png)
 <br>
 <br>
 
@@ -139,6 +140,7 @@ It was shown from prior enumeration that this role can list secrets:
 ```bash
 aws secretsmanager list-secrets
 ```
+![Snip](./Screenshots/image17.png)
 <br>
 <br>
 
@@ -146,6 +148,7 @@ The found secret was obtained:
 ```bash
 aws secretsmanager get-secret-value --secret-id <secret_id>
 ```
+![Snip](./Screenshots/image18.png)
 <br>
 <br>
 
@@ -153,6 +156,7 @@ ListBucket and GetObject permissions were then discovered on for a s3 bucket in 
 ```bash
 aws s3 ls s3://<s3_bucket>
 ```
+![Snip](./Screenshots/image19.png)
 <br>
 <br>
 
@@ -160,6 +164,7 @@ The bucket contained the flag text file so that file was copied locally:
 ```bash
 aws s3 cp s3://<s3_bucket>/<flag> .
 ```
+![Snip](./Screenshots/image20.png)
 <br>
 <br>
 
