@@ -1,8 +1,10 @@
+![Intro to AWS IAM Enumeration](./Screenshots/pwnedlabs.jpg)
 # Intro to AWS IAM Enumeration
 
 ## Objective(s):
 - Evaluate IAM security posture of Huge Logistics.
-- Obtain the flag as proof of exfiltration.
+- Obtain the flag.
+- Retrieve Secrets Manager secret.
 
 
 ## Enumeration
@@ -23,7 +25,7 @@ aws sts get-caller-identity
 
 From the above command the authenticated username for the AWS CLI was found. Further enumeration on the IAM user was conducted:
 ```bash
-aws iam get-user-policies --user-name <user>
+aws iam list-user-policies --user-name <user>
 ```
 <br>
 <br>
@@ -34,22 +36,8 @@ aws iam get-user-policy --user-name <username> --policy-name <policy_name>
 ```
 <br>
 <br>
-  
-ListBucket and GetObject permissions were then discovered on for a s3 bucket in the account. With the permissions discovered and the bucket name obtained, the contents of the s3 bucket was listed out:
-```bash
-aws s3 ls s3://<s3_bucket>
-```
-<br>
-<br>
-  
-The bucket contained the flag text file so that file was copied locally:
-```bash
-aws s3 cp s3://<s3_bucket>/<flag>
-```
-<br>
-<br>
 
-Further enumeration was conducted:
+Further enumeration was conducted listing attached policies:
 ```bash
 aws iam list-attached-user-policies --user-name <username>
 ```
@@ -91,7 +79,49 @@ aws iam get-policy-version --policy-arn <policy_arn> --version-id <version>
 <br>
 <br>
 
-The role details of the found role was investigated:
+We can then do further enumeration by checking out the dev01 policy we found:
+```bash
+aws iam list-policy-versions --policy-arn <policy_arn>
+```
+<br>
+<br>
+
+We can then get check the policy versions of the policy:
+```
+aws iam get-policy-version --policy-arn <policy_arn> --version-id <version>
+```
+<br>
+<br>
+
+Let's check another version to see if we find anything interesteing:
+```
+aws iam get-policy-version --policy-arn <policy_arn> --version-id <version>
+```
+<br>
+<br>
+
+From this policy version we find a role and another policy. This is why good enumeration is important you never know what you will find! Lets dig in some more into these new finds:
+```
+aws iam list-policy-versions --policy-arn <policy_arn>
+```
+<br>
+<br>
+
+Now let's get the policy version:
+```
+aws iam get-policy-version --policy-arn <policy_arn> --version-id <version>
+```
+<br>
+<br>
+
+From the policy version we see that we have permissions to the secrets manager service. We can get asecret value as well as describe secrets on the prod/Custoemrs resource. Now let's check out the role we found earlier.
+```bash
+aws iam list-attached-role-policies --role-name <role_name>
+```
+<br>
+<br>
+
+We can see the policy we just enumerated is attached to this role. So let's get the role information and see what permissions it allows:
 ```bash
 aws iam get-role --role-name <role_name>
 ```
@@ -105,7 +135,7 @@ aws sts assume-role --role-arn <role_arn> --role-session-name <session_name>
 <br>
 <br>
 
-The credentials obtained from assuming the role was configured:
+We obtained credentials for the role and we can configure them for further enumeration:
 ```bash
 aws configure
 ```
@@ -126,14 +156,19 @@ aws secretsmanager get-secret-value --secret-id <secret_id>
 <br>
 <br>
 
-Credentials and info for a database was obtained. Attempted to access the database:
+ListBucket and GetObject permissions were then discovered on for a s3 bucket in the account. With the permissions discovered and the bucket name obtained, the contents of the s3 bucket was listed out:
+```bash
+aws s3 ls s3://<s3_bucket>
+```
+<br>
+<br>
 
-
-## Exploitation
-
-
-## Privilege escalation
-
+The bucket contained the flag text file so that file was copied locally:
+```bash
+aws s3 cp s3://<s3_bucket>/<flag> .
+```
+<br>
+<br>
 
 ## Reference(s)
 - https://pwnedlabs.io/
