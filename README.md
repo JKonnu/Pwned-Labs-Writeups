@@ -27,6 +27,7 @@ A basic understanding of the following concepts is recommended before attempting
 
 ## List of Lab Write-ups:
 [Intro to AWS IAM Enumeration](./Intro-to-AWS-IAM-Enumeration/README.md)
+[Intro to AWS IAM Enumeration](./Pwn-TeamCity-in-the-Cloud/README.md)
 <br>
 
 ## Platform Info:
