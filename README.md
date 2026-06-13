@@ -4,7 +4,7 @@
 ## Overview of the Repository
 This repository contains detailed write-ups, notes, and walkthroughs for labs completed on the Pwned Labs platform. The focus of these labs is cloud security, AWS exploitation techniques, IAM enumeration, privilege escalation, misconfiguration discovery, and defensive awareness within cloud environments.
 
-### Each lab contains:
+### Each lab write-up contains:
 - A high-level overview and key concepts
 - Technical attack walkthroughs
 - Enumeration methodology
