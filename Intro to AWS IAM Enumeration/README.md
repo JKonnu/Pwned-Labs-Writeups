@@ -30,9 +30,8 @@ The lab demonstrates how overly permissive IAM configurations and improperly sco
 
 ## Detection Opportunities
 - Monitor unusual sts:AssumeRole activity through CloudTrail
-- Detect excessive IAM enumeration commands from a single IAM principal
-- Alert on Secrets Manager access from unexpected users or roles
-- Identify access attempts against high-value resources such as Secrets Manager and S3 buckets
+- Detect excessive IAM enumeration commands from a single IAM principal in CloudTrail
+- CloudWatch alerts on Secrets Manager, IAM and S3 access from unexpected users or roles based on CloudTrail events
 <br>
 
 ## Mitigation
