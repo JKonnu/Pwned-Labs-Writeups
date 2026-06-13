@@ -25,7 +25,7 @@ A basic understanding of the following concepts is recommended before attempting
 <br>
 
 ## List of Labs Completed:
-[Intro to AWS IAM Enumeration](./Intro to AWS IAM Enumeration)
+[Intro to AWS IAM Enumeration](./Intro-to-AWS-IAM-Enumeration/README.md)
 <br>
 
 ## Platform Info:
