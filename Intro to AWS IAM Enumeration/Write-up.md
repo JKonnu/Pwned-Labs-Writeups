@@ -49,7 +49,7 @@ aws iam get-user-policy --user-name <username> --policy-name <policy_name>
 <br>
 <br>
 
-We can see that we have ListBucket and GetObject permissions for the hl-dev-artifacts bucket. For the time being will conduct further enumeration by listing attached policies and come back to the S3 permissions later:
+We can see that we have ListBucket and GetObject permissions for the hl-dev-artifacts bucket. For the time being we will conduct further IAM enumeration by listing attached policies for the dev01 user and come back to the S3 permissions later:
 ```bash
 aws iam list-attached-user-policies --user-name <username>
 ```
@@ -57,7 +57,7 @@ aws iam list-attached-user-policies --user-name <username>
 <br>
 <br>
 
-We can see from the command output that additional managed policies are attached to the user. Managed policies should always be reviewed thoroughly as they commonly contain broader permissions than inline policies.
+We can see from the command output that two additional managed policies are attached to the user, one AWS predefined policy for read only access in Guard Duty, and one user defined policy for dev01. Attached policies, also known as managed policies, are standalone reusable policies that can be attached to multiple IAM users, groups, or roles. Managed policies should always be reviewed thoroughly as they commonly contain broader permissions than inline policies.
 
 The discovered managed policies were then enumerated further by obtaining their policy versions:
 ```bash
@@ -91,7 +91,7 @@ aws iam get-policy-version --policy-arn <policy_arn> --version-id <version>
 <br>
 <br>
 
-Let's inspect another policy version to see if additional permissions or resources are exposed:
+We can see based on the policy, we have Get and List Permissions on all (*) resources. Let's inspect another policy version to see if additional permissions or resources are exposed:
 ```
 aws iam get-policy-version --policy-arn <policy_arn> --version-id <version>
 ```
@@ -99,7 +99,7 @@ aws iam get-policy-version --policy-arn <policy_arn> --version-id <version>
 <br>
 <br>
 
-From this policy version we discover both a role as well as another policy reference. This highlights why thorough enumeration is extremely important in AWS environments. Small findings often lead to additional permissions, attack paths, or privilege escalation opportunities.
+From version 7 of this policy we discover both a role as well as another policy referenced. This highlights why thorough enumeration is extremely important in AWS environments. Small findings often lead to additional permissions, attack paths, or privilege escalation opportunities. In some scenarios you can even escalate permissions by performing a policy roll back to a previous version.
 
 We can now continue investigating these newly discovered resources:
 ```
@@ -117,7 +117,7 @@ aws iam get-policy-version --policy-arn <policy_arn> --version-id <version>
 <br>
 <br>
 
-From the policy output we can see that permissions exist for the AWS Secrets Manager service. Specifically, the permissions allow listing and retrieving secrets from the prod/Customers resource.
+From the policy output we can see that permissions exist for the AWS Secrets Manager service and EC2. Specifically, the permissions allow listing and retrieving secrets from the prod/Customers resource and the ability to describe EC2 instances.
 
 Tip: Secrets Manager permissions should always be treated as high-value findings during enumeration as they may expose credentials, API keys, database passwords, or other sensitive information that can lead to further compromise.
 
@@ -129,7 +129,9 @@ aws iam list-attached-role-policies --role-name <role_name>
 <br>
 <br>
 
-We can see that the policy previously enumerated is attached to this role. The role details were then retrieved to determine whether the current IAM user has permission to assume it:
+We can see that the policy previously enumerated is attached to this role. This means that if we are able to assume this role, the secrets manager and EC2 permissions will be accessible to us.
+
+The role details were then retrieved to determine whether the current IAM user has permission to assume it:
 ```bash
 aws iam get-role --role-name <role_name>
 ```
@@ -137,7 +139,7 @@ aws iam get-role --role-name <role_name>
 <br>
 <br>
 
-From the trust relationship and policy configuration, it was determined that the provided IAM user is allowed to assume the discovered role.
+From the trust relationship and policy configuration, it was determined that the provided IAM user is allowed to assume the discovered role. This allows us to have a completely new avenue to compromise.
 
 The role was then assumed for further enumeration:
 ```bash
@@ -157,7 +159,7 @@ aws configure
 
 Tip: After assuming a role, always remember that the newly generated credentials are temporary credentials. Depending on the session duration configured, these credentials may expire after a set period of time.
 
-From the earlier policy enumeration, it was already identified that this role possessed permissions to list secrets within Secrets Manager:
+From the earlier policy enumeration, it was already identified that this role possessed permissions to list secrets within Secrets Manager so we attempt to list all the secrets available to us:
 ```bash
 aws secretsmanager list-secrets
 ```
@@ -165,7 +167,7 @@ aws secretsmanager list-secrets
 <br>
 <br>
 
-The discovered secret was then retrieved successfully:
+The discovered secret was then retrieved successfully due to us having the permission to get a secret value:
 ```bash
 aws secretsmanager get-secret-value --secret-id <secret_id>
 ```
@@ -173,7 +175,9 @@ aws secretsmanager get-secret-value --secret-id <secret_id>
 <br>
 <br>
 
-Further enumeration also revealed ListBucket and GetObject permissions against an S3 bucket within the AWS account.
+We see credentials for a database inside the secret!
+
+Now we can pivot back to the ListBucket and GetObject permissions against the S3 bucket within the AWS account we found earlier.
 
 Since we have both the required permissions and the bucket name, the contents of the bucket can now be enumerated:
 ```bash
@@ -188,6 +192,8 @@ From the command output we can see that the bucket contains the flag file. Since
 aws s3 cp s3://<s3_bucket>/<flag> .
 ```
 ![Snip](./Screenshots/image20.png)
+
+### Pwned!
 <br>
 
 ## Reference(s)
